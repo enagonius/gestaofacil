@@ -1,7 +1,41 @@
 {% extends "base.html" %}
+{% block titulo %}Painel | GestãoFácil{% endblock %}
 {% block conteudo %}
-<section class="painel">
+<div class="titulo-pagina">
     <h1>Painel</h1>
-    <p>Você entrou no GestãoFácil.</p>
-</section>
+    <div class="acoes">
+        <a class="botao secundario" href="{% url 'cliente_novo' %}">Novo cliente</a>
+        <a class="botao" href="{% url 'pedido_novo' %}">Novo pedido</a>
+    </div>
+</div>
+<div class="grade">
+    <section class="painel">
+        <div class="titulo-secao"><h2>Pedidos em aberto</h2><a href="{% url 'pedidos_lista' %}">Ver pedidos</a></div>
+        <ul class="registros">
+        {% for pedido in pedidos %}
+            <li>
+                <div><a class="nome" href="{% url 'pedido_detalhe' pedido.pk %}">{{ pedido.descricao }}</a>
+                    <p class="discreto">{{ pedido.cliente.nome }} · {{ pedido.data_entrega|date:"d/m/Y" }}</p></div>
+                <span class="etiqueta">{{ pedido.get_status_display }}</span>
+            </li>
+        {% empty %}
+            <li>Nenhum pedido em aberto.</li>
+        {% endfor %}
+        </ul>
+    </section>
+    <section class="painel">
+        <div class="titulo-secao"><h2>Itens para reposição</h2><a href="{% url 'estoque_lista' %}">Ver estoque</a></div>
+        <ul class="registros">
+        {% for item in itens %}
+            <li>
+                <div><a class="nome" href="{% url 'estoque_detalhe' item.pk %}">{{ item.nome }}</a>
+                    <p class="discreto">Saldo {{ item.saldo|floatformat:"3" }} {{ item.get_unidade_display }}</p></div>
+                <span class="etiqueta atencao">Estoque baixo</span>
+            </li>
+        {% empty %}
+            <li>Nenhum item atingiu o estoque mínimo.</li>
+        {% endfor %}
+        </ul>
+    </section>
+</div>
 {% endblock %}

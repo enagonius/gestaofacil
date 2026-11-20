@@ -1,15 +1,21 @@
+from uuid import uuid4
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import F
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import ClienteForm, PedidoForm
-from .models import Cliente, Pedido
+from .forms import ClienteForm, ItemEstoqueForm, MovimentacaoForm, PedidoForm
+from .models import Cliente, ItemEstoque, Pedido
+from .servicos import registrar_movimentacao
 
 
 @login_required
 def painel(request):
-    return render(request, "painel.html")
+    pedidos = Pedido.objects.exclude(status=Pedido.Status.FINALIZADO).select_related("cliente")[:6]
+    itens = ItemEstoque.objects.filter(saldo_milesimos__lte=F("estoque_minimo_milesimos"))
+    return render(request, "painel.html", {"pedidos": pedidos, "itens": itens})
 
 
 @login_required
@@ -65,7 +71,9 @@ def pedido_form(request, pk=None):
             return redirect("pedido_detalhe", pk=pedido.pk)
     else:
         cliente = request.GET.get("cliente", "")
-        initial = {"cliente": int(cliente)} if pedido is None and cliente.isascii() and cliente.isdigit() and len(cliente) <= 18 else {}
+        initial = {}
+        if pedido is None and cliente.isascii() and cliente.isdigit() and len(cliente) <= 18:
+            initial["cliente"] = int(cliente)
         form = PedidoForm(instance=pedido, initial=initial)
     return render(request, "pedidos/form.html", {
         "form": form, "pedido": pedido, "tem_clientes": Cliente.objects.exists(),
@@ -89,3 +97,48 @@ def pedido_status(request, pk):
     else:
         messages.info(request, "O status já mudou ou o pedido foi finalizado.")
     return redirect("pedido_detalhe", pk=pk)
+
+
+@login_required
+def estoque_lista(request):
+    return render(request, "estoque/lista.html", {"itens": ItemEstoque.objects.all()})
+
+
+@login_required
+def estoque_novo(request):
+    if request.method == "POST":
+        form = ItemEstoqueForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.estoque_minimo_milesimos = int(form.cleaned_data["estoque_minimo"] * 1000)
+            item.save()
+            messages.success(request, "Item criado. Registre uma entrada para informar o saldo inicial.")
+            return redirect("estoque_detalhe", pk=item.pk)
+    else:
+        form = ItemEstoqueForm()
+    return render(request, "estoque/form.html", {"form": form})
+
+
+@login_required
+def estoque_detalhe(request, pk):
+    item = get_object_or_404(ItemEstoque, pk=pk)
+    if request.method == "POST":
+        form = MovimentacaoForm(request.POST)
+        if form.is_valid():
+            resultado = registrar_movimentacao(item, form.cleaned_data)
+            if resultado == "registrada":
+                messages.success(request, "Movimentação registrada.")
+                return redirect("estoque_detalhe", pk=pk)
+            if resultado == "ja_registrada":
+                messages.info(request, "Esta movimentação já está no histórico.")
+                return redirect("estoque_detalhe", pk=pk)
+            aviso = "Saldo insuficiente para esta saída."
+            if resultado == "limite_excedido":
+                aviso = "O saldo ultrapassaria o limite de armazenamento."
+            form.add_error("quantidade", aviso)
+            item.refresh_from_db()
+    else:
+        form = MovimentacaoForm(initial={"chave_operacao": uuid4()})
+    return render(request, "estoque/detalhe.html", {
+        "item": item, "form": form, "movimentacoes": item.movimentacoes.all(),
+    })

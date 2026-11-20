@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titulo %}Novo item | GestãoFácil{% endblock %}
+{% block conteudo %}
+<a class="retorno" href="{% url 'estoque_lista' %}">Voltar para estoque</a>
+<div class="titulo-pagina"><h1>Novo item</h1></div>
+<section class="painel formulario-painel">
+    <form class="formulario" method="post">
+        {% csrf_token %}{{ form.as_div }}
+        <div class="acoes"><button class="botao" type="submit">Salvar item</button></div>
+    </form>
+</section>
+{% endblock %}

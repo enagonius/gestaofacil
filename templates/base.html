@@ -18,6 +18,7 @@
             <a href="{% url 'painel' %}">Painel</a>
             <a href="{% url 'clientes_lista' %}">Clientes</a>
             <a href="{% url 'pedidos_lista' %}">Pedidos</a>
+            <a href="{% url 'estoque_lista' %}">Estoque</a>
         </nav>
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}

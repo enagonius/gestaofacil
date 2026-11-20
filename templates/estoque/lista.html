@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}Estoque | GestãoFácil{% endblock %}
+{% block conteudo %}
+<div class="titulo-pagina">
+    <h1>Estoque</h1>
+    <a class="botao" href="{% url 'estoque_novo' %}">Novo item</a>
+</div>
+<section class="painel">
+    <ul class="registros">
+    {% for item in itens %}
+        <li>
+            <div><a class="nome" href="{% url 'estoque_detalhe' item.pk %}">{{ item.nome }}</a>
+                <p class="discreto">Mínimo {{ item.estoque_minimo|floatformat:"3" }} {{ item.get_unidade_display }}</p></div>
+            <div class="registro-meta"><strong>{{ item.saldo|floatformat:"3" }} {{ item.get_unidade_display }}</strong>
+                {% if item.estoque_baixo %}<span class="etiqueta atencao">Estoque baixo</span>{% endif %}</div>
+        </li>
+    {% empty %}
+        <li>Nenhum item cadastrado.</li>
+    {% endfor %}
+    </ul>
+</section>
+{% endblock %}

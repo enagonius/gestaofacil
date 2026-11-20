@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 
 
@@ -47,3 +49,73 @@ class Pedido(models.Model):
 
     def __str__(self):
         return self.descricao
+
+
+MAXIMO_MILESIMOS = 999_999_999_999
+
+
+class ItemEstoque(models.Model):
+    class Unidade(models.TextChoices):
+        KG = "KG", "kg"
+        G = "G", "g"
+        L = "L", "L"
+        ML = "ML", "mL"
+        UN = "UN", "un."
+
+    nome = models.CharField(max_length=120)
+    unidade = models.CharField(max_length=2, choices=Unidade.choices)
+    saldo_milesimos = models.PositiveBigIntegerField(default=0)
+    estoque_minimo_milesimos = models.PositiveBigIntegerField(default=0)
+
+    class Meta:
+        db_table = "item_estoque"
+        ordering = ["nome", "id"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(saldo_milesimos__lte=MAXIMO_MILESIMOS),
+                name="item_saldo_maximo",
+            ),
+        ]
+
+    @property
+    def saldo(self):
+        return Decimal(self.saldo_milesimos) / 1000
+
+    @property
+    def estoque_minimo(self):
+        return Decimal(self.estoque_minimo_milesimos) / 1000
+
+    @property
+    def estoque_baixo(self):
+        return self.saldo_milesimos <= self.estoque_minimo_milesimos
+
+    def __str__(self):
+        return self.nome
+
+
+class MovimentacaoEstoque(models.Model):
+    class Tipo(models.TextChoices):
+        ENTRADA = "ENTRADA", "Entrada"
+        SAIDA = "SAIDA", "Saída"
+
+    item = models.ForeignKey(ItemEstoque, on_delete=models.PROTECT, related_name="movimentacoes")
+    tipo = models.CharField(max_length=7, choices=Tipo.choices)
+    quantidade_milesimos = models.PositiveBigIntegerField()
+    criada_em = models.DateTimeField(auto_now_add=True)
+    observacoes = models.TextField("observações", max_length=500, blank=True)
+    chave_operacao = models.UUIDField()
+
+    class Meta:
+        db_table = "movimentacao_estoque"
+        ordering = ["-criada_em", "-id"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(quantidade_milesimos__gt=0),
+                name="movimentacao_qtd_positiva",
+            ),
+            models.UniqueConstraint(fields=["item", "chave_operacao"], name="movimentacao_chave_unica"),
+        ]
+
+    @property
+    def quantidade(self):
+        return Decimal(self.quantidade_milesimos) / 1000
