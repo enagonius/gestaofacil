@@ -115,9 +115,15 @@ Abra [http://127.0.0.1:8000/](http://127.0.0.1:8000/), digite `ADMINISTRADOR` (n
 
 ## Autores
 Aline Pereira Barbosa
+
 Diogo Américo Gomes Diógenes
+
 Gabriel Ferreira Machado
+
 Guilherme de Souza Medeiros
+
 Hiago Protásio dos Passos Sales
+
 João Gabriel Lopes Trindade
+
 Vinícius Evangelista de Souza
