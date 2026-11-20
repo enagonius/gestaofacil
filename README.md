@@ -45,19 +45,12 @@ não representa uma linha do tempo de todas as alterações de status.
 ## Tecnologias
 
 -----------------------------------------------------------------------
-  **Python 3.13 ou 3.12:** linguagem e ambiente de execução
-
-  **Django 5.2.19:** framework web, rotas, autenticação,
-                                      formulários e ORM
-
-  **SQLite:** bbanco de dados local
-
-  **HTML:** estrutura das páginas
-
-  **CSS:** estilização da interface
-
-  **Git:** versionamento e hospedagem do
-                                      código-fonte
+  - **Python 3.13 ou 3.12:** linguagem e ambiente de execução.
+  - **Django 5.2.19:** framework web, rotas, autenticação, formulários e ORM.
+  - **SQLite:** bbanco de dados local.
+  - **HTML:** estrutura das páginas.
+  - **CSS:** estilização da interface.
+  - **Git:** versionamento e hospedagem do código-fonte.
   -----------------------------------------------------------------------
 
 As dependências Python estão registradas em `requirements.txt`.
