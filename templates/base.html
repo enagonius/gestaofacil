@@ -17,6 +17,7 @@
         <nav aria-label="Navegação principal">
             <a href="{% url 'painel' %}">Painel</a>
             <a href="{% url 'clientes_lista' %}">Clientes</a>
+            <a href="{% url 'pedidos_lista' %}">Pedidos</a>
         </nav>
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}

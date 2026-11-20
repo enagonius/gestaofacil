@@ -15,8 +15,18 @@
         </dl>
     </section>
     <section class="painel">
-        <h2>Histórico de pedidos</h2>
-        <p>O histórico será conectado na próxima etapa.</p>
+        <div class="titulo-secao">
+            <h2>Histórico de pedidos</h2>
+            <a href="{% url 'pedido_novo' %}?cliente={{ cliente.pk }}">Novo pedido</a>
+        </div>
+        <ul class="registros">
+        {% for pedido in pedidos %}
+            <li><a href="{% url 'pedido_detalhe' pedido.pk %}">{{ pedido.descricao }}</a>
+                <span class="etiqueta">{{ pedido.get_status_display }}</span></li>
+        {% empty %}
+            <li>Nenhum pedido para este cliente.</li>
+        {% endfor %}
+        </ul>
     </section>
 </div>
 {% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}{{ pedido.descricao }} | GestãoFácil{% endblock %}
+{% block conteudo %}
+<a class="retorno" href="{% url 'pedidos_lista' %}">Voltar para pedidos</a>
+<div class="titulo-pagina">
+    <h1>{{ pedido.descricao }}</h1>
+    {% if pedido.proximo_status %}
+    <a class="botao secundario" href="{% url 'pedido_editar' pedido.pk %}">Editar pedido</a>
+    {% endif %}
+</div>
+<div class="grade">
+    <section class="painel">
+        <h2>Dados do pedido</h2>
+        <dl class="dados">
+            <div><dt>Cliente</dt><dd><a href="{% url 'cliente_detalhe' pedido.cliente_id %}">{{ pedido.cliente.nome }}</a></dd></div>
+            <div><dt>Quantidade</dt><dd>{{ pedido.quantidade }}</dd></div>
+            <div><dt>Data de entrega</dt><dd>{{ pedido.data_entrega|date:"d/m/Y" }}</dd></div>
+            <div><dt>Observações</dt><dd class="observacoes">{{ pedido.observacoes|default:"Nenhuma observação" }}</dd></div>
+        </dl>
+    </section>
+    <section class="painel">
+        <h2>Status do pedido</h2>
+        <p><span class="etiqueta">{{ pedido.get_status_display }}</span></p>
+        {% if pedido.proximo_status %}
+        <form action="{% url 'pedido_status' pedido.pk %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="status_atual" value="{{ pedido.status }}">
+            <button type="submit" class="botao">
+                {% if pedido.status == 'PENDENTE' %}Iniciar produção{% else %}Finalizar pedido{% endif %}
+            </button>
+        </form>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

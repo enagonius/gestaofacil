@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titulo %}Cadastro de pedido | GestãoFácil{% endblock %}
+{% block conteudo %}
+<a class="retorno" href="{% url 'pedidos_lista' %}">Voltar para pedidos</a>
+<div class="titulo-pagina"><h1>{% if pedido %}Editar pedido{% else %}Novo pedido{% endif %}</h1></div>
+<section class="painel formulario-painel">
+    {% if tem_clientes %}
+    <form class="formulario" method="post">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <div class="acoes"><button class="botao" type="submit">Salvar pedido</button></div>
+    </form>
+    {% else %}
+    <p><a href="{% url 'cliente_novo' %}">Cadastre um cliente</a> para criar o pedido.</p>
+    {% endif %}
+</section>
+{% endblock %}
