@@ -43,20 +43,24 @@ não representa uma linha do tempo de todas as alterações de status.
 -   Identificação de itens que precisam de reposição.
 
 ## Tecnologias
-
------------------------------------------------------------------------
-  - **Python 3.13 ou 3.12:** linguagem e ambiente de execução.
-  - **Django 5.2.19:** framework web, rotas, autenticação, formulários e ORM.
-  - **SQLite:** bbanco de dados local.
-  - **HTML:** estrutura das páginas.
-  - **CSS:** estilização da interface.
-  - **Git:** versionamento e hospedagem do código-fonte.
-  -----------------------------------------------------------------------
+- **Python 3.13 ou 3.12:** linguagem e ambiente de execução.
+- **Django 5.2.19:** framework web, rotas, autenticação, formulários e ORM.
+- **SQLite:** bbanco de dados local.
+- **HTML:** estrutura das páginas.
+- **CSS:** estilização da interface.
+- **Git:** versionamento e hospedagem do código-fonte.
 
 As dependências Python estão registradas em `requirements.txt`.
 
 **Não é necessário instalar PostgreSQL, MySQL ou outro servidor de banco
 de dados.** O projeto utiliza SQLite localmente.
+
+## Estrutura
+- `config/` configura Django, SQLite, autenticação e rotas.
+- `gestao/` contém modelos, formulários, telas, serviço de estoque, migrações e testes.
+- `templates/` contém as páginas HTML.
+- `static/` contém o CSS.
+- `db.sqlite3` é criado em cada computador. O Git ignora o banco e a pasta do ambiente virtual.
 
 Para mais informações, consulte `ARQUITETURA.md`.
 
@@ -105,13 +109,6 @@ execute novamente esse comando. Caso precise redefinir a senha, utilize:
 ```
 
 Abra [http://127.0.0.1:8000/](http://127.0.0.1:8000/), digite `ADMINISTRADOR` (nome de usuário escolhido anteriormente) e use a senha escolhida durante a criação do usuário.
-
-## Estrutura
-- `config/` configura Django, SQLite, autenticação e rotas.
-- `gestao/` contém modelos, formulários, telas, serviço de estoque, migrações e testes.
-- `templates/` contém as páginas HTML.
-- `static/` contém o CSS.
-- `db.sqlite3` é criado em cada computador. O Git ignora o banco e a pasta do ambiente virtual.
 
 ## Autores
 Aline Pereira Barbosa
