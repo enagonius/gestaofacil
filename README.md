@@ -44,21 +44,19 @@ não representa uma linha do tempo de todas as alterações de status.
 
 ## Tecnologias
 
-  -----------------------------------------------------------------------
-  Tecnologia                          Utilização
-  ----------------------------------- -----------------------------------
-  Python 3.13 ou 3.12                 Linguagem e ambiente de execução
+-----------------------------------------------------------------------
+  **Python 3.13 ou 3.12:** linguagem e ambiente de execução
 
-  Django 5.2.19                       Framework web, rotas, autenticação,
+  **Django 5.2.19:** framework web, rotas, autenticação,
                                       formulários e ORM
 
-  SQLite                              Banco de dados local
+  **SQLite:** bbanco de dados local
 
-  HTML                                Estrutura das páginas
+  **HTML:** estrutura das páginas
 
-  CSS                                 Estilização da interface
+  **CSS:** estilização da interface
 
-  Git                                 Versionamento e hospedagem do
+  **Git:** versionamento e hospedagem do
                                       código-fonte
   -----------------------------------------------------------------------
 
@@ -66,6 +64,8 @@ As dependências Python estão registradas em `requirements.txt`.
 
 **Não é necessário instalar PostgreSQL, MySQL ou outro servidor de banco
 de dados.** O projeto utiliza SQLite localmente.
+
+Para mais informações, consulte `ARQUITETURA.md`.
 
 ## Instalação e execução local
 1. Clone ou extraia o repositório principal;
