@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titulo %}{{ cliente.nome }} | GestãoFácil{% endblock %}
+{% block conteudo %}
+<a class="retorno" href="{% url 'clientes_lista' %}">Voltar para clientes</a>
+<div class="titulo-pagina">
+    <h1>{{ cliente.nome }}</h1>
+    <a class="botao secundario" href="{% url 'cliente_editar' cliente.pk %}">Editar cliente</a>
+</div>
+<div class="grade">
+    <section class="painel">
+        <h2>Dados do cliente</h2>
+        <dl class="dados">
+            <div><dt>Telefone</dt><dd>{{ cliente.telefone|default:"Não informado" }}</dd></div>
+            <div><dt>Observações</dt><dd class="observacoes">{{ cliente.observacoes|default:"Nenhuma observação" }}</dd></div>
+        </dl>
+    </section>
+    <section class="painel">
+        <h2>Histórico de pedidos</h2>
+        <p>O histórico será conectado na próxima etapa.</p>
+    </section>
+</div>
+{% endblock %}
