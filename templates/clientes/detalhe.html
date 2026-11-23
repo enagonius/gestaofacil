@@ -11,6 +11,13 @@
         <h2>Dados do cliente</h2>
         <dl class="dados">
             <div><dt>Telefone</dt><dd>{{ cliente.telefone|default:"Não informado" }}</dd></div>
+            <div><dt>CEP</dt><dd>{{ cliente.cep|default:"Não informado" }}</dd></div>
+            <div><dt>Logradouro</dt><dd>{{ cliente.logradouro|default:"Não informado" }}</dd></div>
+            <div><dt>Número</dt><dd>{{ cliente.numero|default:"Não informado" }}</dd></div>
+            <div><dt>Complemento</dt><dd>{{ cliente.complemento|default:"Não informado" }}</dd></div>
+            <div><dt>Bairro</dt><dd>{{ cliente.bairro|default:"Não informado" }}</dd></div>
+            <div><dt>Cidade</dt><dd>{{ cliente.cidade|default:"Não informado" }}</dd></div>
+            <div><dt>UF</dt><dd>{{ cliente.uf|default:"Não informado" }}</dd></div>
             <div><dt>Observações</dt><dd class="observacoes">{{ cliente.observacoes|default:"Nenhuma observação" }}</dd></div>
         </dl>
     </section>
