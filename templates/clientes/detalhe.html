@@ -31,7 +31,12 @@
             <li><a href="{% url 'pedido_detalhe' pedido.pk %}">{{ pedido.descricao }}</a>
                 <span class="etiqueta">{{ pedido.get_status_display }}</span></li>
         {% empty %}
-            <li>Nenhum pedido para este cliente.</li>
+            <li class="gf-detalhe-vazio">
+                <span class="gf-detalhe-vazio-simbolo" aria-hidden="true">▤</span>
+                <strong>Este cliente ainda não tem pedidos.</strong>
+                <p>Quando você criar um pedido, ele aparecerá neste histórico.</p>
+                <a class="botao secundario" href="{% url 'pedido_novo' %}?cliente={{ cliente.pk }}">Criar primeiro pedido</a>
+            </li>
         {% endfor %}
         </ul>
     </section>

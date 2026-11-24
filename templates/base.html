@@ -102,8 +102,12 @@
 {% endif %}
 
     {% for mensagem in messages %}
-        <p class="mensagem {{ mensagem.tags }}" role="status">{{ mensagem }}</p>
+        <div class="mensagem gf-flash {{ mensagem.tags }}"
+             {% if 'error' in mensagem.tags or 'warning' in mensagem.tags %}role="alert"{% else %}role="status"{% endif %}>
+            <span>{{ mensagem }}</span>
+        </div>
     {% endfor %}
+
     {% block conteudo %}{% endblock %}
 </main>
 

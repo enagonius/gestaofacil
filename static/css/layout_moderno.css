@@ -696,3 +696,181 @@
 @media (prefers-reduced-motion: reduce) {
     .gf-lista-campo input, .gf-lista-campo select { scroll-behavior: auto; }
 }
+
+
+/* Foco visível: para navegação com teclado. */
+.gf-autenticado a:focus-visible,
+.gf-autenticado button:focus-visible,
+.gf-autenticado input:focus-visible,
+.gf-autenticado select:focus-visible,
+.gf-autenticado textarea:focus-visible,
+.gf-visitante a:focus-visible,
+.gf-visitante button:focus-visible,
+.gf-visitante input:focus-visible {
+    outline: 3px solid #378d62;
+    outline-offset: 3px;
+}
+
+/* Mensagens exibidas pelo django.contrib.messages. */
+.gf-flash {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    width: 100%;
+    margin: 0 0 1.25rem;
+    padding: .9rem 1rem;
+    border: 1px solid #ccd9df;
+    border-radius: .8rem;
+    background: #f0f5f7;
+    color: #304c5a;
+    font-size: .93rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+.gf-flash::before {
+    content: "i";
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-top: .05rem;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    font-size: .8rem;
+    font-weight: 800;
+}
+.gf-flash.success, .gf-flash.sucesso {
+    border-color: #b7dcc5;
+    background: #e8f5ed;
+    color: #195c3b;
+}
+.gf-flash.success::before, .gf-flash.sucesso::before {
+    content: "✓";
+    border: 0;
+    background: #c7ead4;
+}
+.gf-flash.warning, .gf-flash.info, .gf-flash.aviso {
+    border-color: #edd6a2;
+    background: #fff7e8;
+    color: #79500b;
+}
+.gf-flash.warning::before, .gf-flash.info::before, .gf-flash.aviso::before { content: "!"; }
+.gf-flash.error, .gf-flash.alerta {
+    border-color: #eac1c9;
+    background: #fff0f3;
+    color: #8d2939;
+}
+.gf-flash.error::before, .gf-flash.alerta::before { content: "!"; }
+
+/* Tela de login sem sidebar. */
+.gf-visitante { background: #f2f6f3; }
+.gf-visitante .gf-public-content.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: clamp(1rem, 3vw, 2rem);
+}
+.gf-visitante .gf-public-content > .gf-flash { max-width: 67rem; margin-bottom: 0; }
+.gf-login-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+    width: min(100%, 67rem);
+    min-height: min(39rem, calc(100dvh - 4rem));
+    overflow: hidden;
+    border: 1px solid #e0e9e3;
+    border-radius: 1.4rem;
+    background: #fff;
+    box-shadow: 0 22px 65px rgb(20 55 39 / 10%);
+}
+.gf-login-apresentacao {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    min-width: 0;
+    padding: clamp(2rem, 4vw, 3.25rem);
+    background: radial-gradient(circle at 90% 10%, #286a51, transparent 45%),
+                linear-gradient(150deg, #194b3b, #102f28);
+    color: #fff;
+}
+.gf-login-marca { display: flex; align-items: center; gap: .7rem; font-size: 1.24rem; font-weight: 800; }
+.gf-login-marca-simbolo { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex: 0 0 auto; border-radius: .75rem; background: #ddf3e3; color: #164b37; font-size: 1.25rem; }
+.gf-login-introducao { margin-top: auto; }
+.gf-login-selo { display: inline-flex; padding: .35rem .7rem; border: 1px solid rgb(255 255 255 / 28%); border-radius: 2rem; font-size: .81rem; color: #e9f7ef; }
+.gf-login-introducao h1 { max-width: 25rem; margin: 1.1rem 0 1rem; color: #fff; font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.14; letter-spacing: -.04em; }
+.gf-login-introducao p { max-width: 26rem; color: #d7eadf; line-height: 1.65; }
+.gf-login-beneficios { display: grid; gap: .7rem; list-style: none; padding: 0; margin: 0; }
+.gf-login-beneficios li { display: flex; gap: .6rem; align-items: flex-start; color: #e5f2eb; font-size: .89rem; }
+.gf-login-beneficios li span { color: #9cddba; font-weight: 900; }
+.gf-login-legenda { margin-top: auto; color: #afcdbf; font-size: .78rem; }
+.gf-login-area { display: grid; place-items: center; min-width: 0; padding: clamp(1.7rem, 4vw, 3.5rem); }
+.gf-login-formulario-container { width: 100%; max-width: 24rem; }
+.gf-login-tag { color: #327354; letter-spacing: .13em; font-size: .72rem; font-weight: 850; }
+.gf-login-formulario-container h2 { margin: .55rem 0 .6rem; color: #1c3227; font-size: clamp(1.6rem, 2.6vw, 2rem); letter-spacing: -.035em; }
+.gf-login-subtitulo { margin-bottom: 2rem; color: #526e60; font-size: .93rem; line-height: 1.5; }
+.gf-login-formulario { gap: 1.15rem; }
+.gf-login-campo { display: grid; gap: .45rem; }
+.gf-login-campo label { color: #273d30; font-size: .88rem; font-weight: 750; }
+.gf-login-campo input {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    padding: .7rem .9rem;
+    border: 1px solid #adc4b5;
+    border-radius: .65rem;
+    background: #fff;
+    color: #1d3328;
+    font: inherit;
+    transition: border-color .18s ease, box-shadow .18s ease;
+}
+.gf-login-campo input:focus { border-color: #237152; box-shadow: 0 0 0 3px rgb(50 135 90 / 13%); }
+.gf-login-campo--erro input { border-color: #aa394b; }
+.gf-login-erro-geral { padding: .85rem 1rem; border: 1px solid #efc5cb; border-radius: .7rem; background: #fff0f2; color: #8e2838; font-size: .87rem; }
+.gf-login-erro-geral strong { display: block; margin-bottom: .25rem; }
+.gf-login-erro-geral ul { margin: .3rem 0 0; padding-left: 1.1rem; }
+.gf-login-erro-campo { margin: 0; color: #8e2838; font-size: .84rem; }
+.gf-login-entrar { display: inline-flex; width: 100%; min-height: 3rem; margin-top: .3rem; gap: .5rem; border-radius: .7rem; background: #165b43; }
+.gf-login-entrar:hover { background: #104b37; }
+.gf-login-observacao { margin-top: 1.3rem; color: #5d7265; font-size: .83rem; line-height: 1.55; }
+
+/* Informações claras quando uma lista de detalhes está vazia. */
+.registros li.gf-detalhe-vazio {
+    display: grid;
+    justify-items: start;
+    gap: .5rem;
+    width: 100%;
+    padding: 1.25rem 0;
+    border-bottom: 0;
+    color: #405c4b;
+}
+.gf-detalhe-vazio strong { color: #224a35; font-weight: 750; }
+.gf-detalhe-vazio p { font-size: .89rem; line-height: 1.5; }
+.gf-detalhe-vazio .botao { margin-top: .2rem; }
+.gf-detalhe-vazio-simbolo { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: .8rem; background: #e7f3eb; color: #19553e; font-size: 1.2rem; }
+
+@media (max-width: 48rem) {
+    .gf-login-layout { grid-template-columns: 1fr; min-height: auto; border-radius: 1.05rem; }
+    .gf-login-apresentacao { padding: 1.35rem 1.5rem; gap: 0; }
+    .gf-login-introducao { margin: .8rem 0 0; }
+    .gf-login-introducao h1 { margin: .4rem 0; font-size: 1.35rem; }
+    .gf-login-introducao p { font-size: .86rem; }
+    .gf-login-selo, .gf-login-beneficios, .gf-login-legenda { display: none; }
+    .gf-login-area { padding: 1.8rem 1.5rem 2rem; }
+    .gf-login-subtitulo { margin-bottom: 1.4rem; }
+}
+@media (max-width: 26rem) {
+    .gf-visitante .gf-public-content.container { padding: .65rem; }
+    .gf-login-area { padding: 1.4rem 1rem 1.8rem; }
+    .gf-login-marca { font-size: 1.05rem; }
+    .gf-login-introducao h1 { font-size: 1.19rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .gf-login-campo input { transition: none; }
+}

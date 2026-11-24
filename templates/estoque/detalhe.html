@@ -26,7 +26,11 @@
                 <span>{{ movimento.quantidade|floatformat:"3" }} {{ item.get_unidade_display }}</span>
             </li>
         {% empty %}
-            <li>Nenhuma movimentação registrada.</li>
+            <li class="gf-detalhe-vazio">
+                <span class="gf-detalhe-vazio-simbolo" aria-hidden="true">▤</span>
+                <strong>Nenhuma movimentação registrada.</strong>
+                <p>Use o formulário nesta página para registrar a primeira entrada do item.</p>
+            </li>
         {% endfor %}
         </ul>
     </section>

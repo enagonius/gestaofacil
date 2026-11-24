@@ -1,13 +1,58 @@
 {% extends "base.html" %}
 {% block titulo %}Entrar | GestãoFácil{% endblock %}
 {% block conteudo %}
-<section class="painel login-cartao">
-    <h1>Entrar</h1>
-    <form class="formulario" method="post">
-        {% csrf_token %}
-        {{ form.as_div }}
-        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
-        <div class="acoes"><button class="botao" type="submit">Entrar</button></div>
-    </form>
+<section class="gf-login-layout" aria-labelledby="gf-login-titulo">
+    <div class="gf-login-apresentacao">
+        <div class="gf-login-marca">
+            <span class="gf-login-marca-simbolo" aria-hidden="true">G</span>
+            <span>GestãoFácil</span>
+        </div>
+        <div class="gf-login-introducao">
+            <span class="gf-login-selo">Organização para o seu negócio</span>
+            <h1>Mais clareza para a rotina do seu negócio.</h1>
+            <p>Gerencie clientes, acompanhe pedidos e organize o estoque em um único lugar.</p>
+        </div>
+        <ul class="gf-login-beneficios">
+            <li><span aria-hidden="true">✓</span> Cadastros de clientes organizados</li>
+            <li><span aria-hidden="true">✓</span> Pedidos com acompanhamento de status</li>
+            <li><span aria-hidden="true">✓</span> Controle de estoque e alertas de reposição</li>
+        </ul>
+        <span class="gf-login-legenda">GestãoFácil · Aplicação web</span>
+    </div>
+    <div class="gf-login-area">
+        <div class="gf-login-formulario-container">
+            <span class="gf-login-tag">ACESSO RESTRITO</span>
+            <h2 id="gf-login-titulo">Entre na sua conta</h2>
+            <p class="gf-login-subtitulo">Use as credenciais cadastradas no sistema.</p>
+            <form method="post" class="formulario gf-login-formulario" action="{% url 'login' %}">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="gf-login-erro-geral" role="alert">
+                        <strong>Não foi possível entrar.</strong>
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                <div class="gf-login-campo{% if form.username.errors %} gf-login-campo--erro{% endif %}">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                    {% for erro in form.username.errors %}
+                        <p class="gf-login-erro-campo" role="alert">{{ erro }}</p>
+                    {% endfor %}
+                </div>
+                <div class="gf-login-campo{% if form.password.errors %} gf-login-campo--erro{% endif %}">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                    {% for erro in form.password.errors %}
+                        <p class="gf-login-erro-campo" role="alert">{{ erro }}</p>
+                    {% endfor %}
+                </div>
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+                <button type="submit" class="botao gf-login-entrar">Entrar no GestãoFácil <span aria-hidden="true">→</span></button>
+            </form>
+            <p class="gf-login-observacao">Ainda não possui acesso? Solicite o cadastro ao responsável pelo sistema.</p>
+        </div>
+    </div>
 </section>
 {% endblock %}
