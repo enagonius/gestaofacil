@@ -6,32 +6,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block titulo %}GestãoFácil{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout_moderno.css' %}">
 </head>
-<body>
-<header class="topo">
-    <div class="topo-conteudo">
-        <a class="marca" href="{% url 'painel' %}">
-            <span class="marca-simbolo" aria-hidden="true">G</span> GestãoFácil
+<body class="{% if user.is_authenticated %}gf-autenticado{% else %}gf-visitante{% endif %}">
+
+<a class="gf-skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+
+{% if user.is_authenticated %}
+
+{# Ícones SVG locais: não dependem de bibliotecas ou serviços externos. #}
+<svg class="gf-icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="gf-icon-painel" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+    </symbol>
+    <symbol id="gf-icon-clientes" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3"/>
+        <path d="M3.5 20v-2a5.5 5.5 0 0 1 11 0v2"/>
+        <path d="M16.5 5.5a3 3 0 0 1 0 5.5"/>
+        <path d="M17 14a5.5 5.5 0 0 1 3.5 5.2V20"/>
+    </symbol>
+    <symbol id="gf-icon-pedidos" viewBox="0 0 24 24">
+        <rect x="5" y="4" width="14" height="17" rx="2"/>
+        <path d="M9 4.5V3h6v1.5M9 10h6M9 14h6M9 18h4"/>
+    </symbol>
+    <symbol id="gf-icon-estoque" viewBox="0 0 24 24">
+        <path d="m3 7 9-4 9 4-9 4-9-4Z"/>
+        <path d="M3 7v10l9 4 9-4V7M12 11v10"/>
+    </symbol>
+</svg>
+
+<div class="gf-shell">
+    <aside class="gf-sidebar" aria-label="Menu lateral">
+        <a class="gf-brand" href="{% url 'painel' %}">
+            <span class="gf-brand-mark" aria-hidden="true">G</span>
+            <span class="gf-brand-text">
+                <strong>GestãoFácil</strong>
+                <small>Seu negócio organizado</small>
+            </span>
         </a>
-        {% if user.is_authenticated %}
-        <nav aria-label="Navegação principal">
-            <a href="{% url 'painel' %}">Painel</a>
-            <a href="{% url 'clientes_lista' %}">Clientes</a>
-            <a href="{% url 'pedidos_lista' %}">Pedidos</a>
-            <a href="{% url 'estoque_lista' %}">Estoque</a>
-        </nav>
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button class="botao secundario sair" type="submit">Sair</button>
-        </form>
-        {% endif %}
-    </div>
-</header>
-<main class="container">
+
+        <div class="gf-sidebar-body">
+            <p class="gf-nav-title">MENU PRINCIPAL</p>
+            {% include "partials/_menu.html" %}
+        </div>
+
+        <div class="gf-sidebar-footer">
+            <div class="gf-user-card">
+                <span class="gf-user-avatar" aria-hidden="true">{{ user.get_username|slice:":1"|upper }}</span>
+                <span class="gf-user-info">
+                    <small>Conectado como</small>
+                    <strong>{{ user.get_username }}</strong>
+                </span>
+            </div>
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="gf-logout">Sair da conta</button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="gf-workspace">
+        <header class="gf-toolbar">
+            <div class="gf-toolbar-heading">
+                <span class="gf-toolbar-eyebrow">PAINEL ADMINISTRATIVO</span>
+                <span class="gf-toolbar-title">Área de trabalho</span>
+            </div>
+            <div class="gf-toolbar-actions">
+                <span class="gf-toolbar-user">{{ user.get_username }}</span>
+
+                <details class="gf-mobile-menu">
+                    <summary aria-label="Abrir menu de navegação">
+                        <span aria-hidden="true">☰</span>
+                        <span>Menu</span>
+                    </summary>
+                    <div class="gf-mobile-panel">
+                        {% include "partials/_menu.html" %}
+                        <div class="gf-mobile-account">Conectado como <strong>{{ user.get_username }}</strong></div>
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="gf-mobile-logout">Sair da conta</button>
+                        </form>
+                    </div>
+                </details>
+            </div>
+        </header>
+
+        <main id="conteudo-principal" class="container gf-content">
+{% else %}
+
+{# Tela de login: mantém o mesmo bloco e a formatação existentes. #}
+<main id="conteudo-principal" class="container gf-public-content">
+{% endif %}
+
     {% for mensagem in messages %}
         <p class="mensagem {{ mensagem.tags }}" role="status">{{ mensagem }}</p>
     {% endfor %}
     {% block conteudo %}{% endblock %}
 </main>
+
+{% if user.is_authenticated %}
+    </div>
+</div>
+{% endif %}
+
 </body>
 </html>

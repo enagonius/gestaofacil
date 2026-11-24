@@ -1,0 +1,25 @@
+<nav class="gf-nav" aria-label="Navegação principal">
+    <a class="gf-nav-link" href="{% url 'painel' %}"
+       {% if request.resolver_match.url_name == 'painel' %}aria-current="page"{% endif %}>
+        <svg class="gf-nav-icon" aria-hidden="true"><use href="#gf-icon-painel"></use></svg>
+        <span>Painel</span>
+    </a>
+
+    <a class="gf-nav-link" href="{% url 'clientes_lista' %}"
+       {% if request.resolver_match.url_name == 'clientes_lista' or request.resolver_match.url_name == 'cliente_novo' or request.resolver_match.url_name == 'cliente_detalhe' or request.resolver_match.url_name == 'cliente_editar' %}aria-current="page"{% endif %}>
+        <svg class="gf-nav-icon" aria-hidden="true"><use href="#gf-icon-clientes"></use></svg>
+        <span>Clientes</span>
+    </a>
+
+    <a class="gf-nav-link" href="{% url 'pedidos_lista' %}"
+       {% if request.resolver_match.url_name == 'pedidos_lista' or request.resolver_match.url_name == 'pedido_novo' or request.resolver_match.url_name == 'pedido_detalhe' or request.resolver_match.url_name == 'pedido_editar' or request.resolver_match.url_name == 'pedido_status' %}aria-current="page"{% endif %}>
+        <svg class="gf-nav-icon" aria-hidden="true"><use href="#gf-icon-pedidos"></use></svg>
+        <span>Pedidos</span>
+    </a>
+
+    <a class="gf-nav-link" href="{% url 'estoque_lista' %}"
+       {% if request.resolver_match.url_name == 'estoque_lista' or request.resolver_match.url_name == 'estoque_novo' or request.resolver_match.url_name == 'estoque_detalhe' %}aria-current="page"{% endif %}>
+        <svg class="gf-nav-icon" aria-hidden="true"><use href="#gf-icon-estoque"></use></svg>
+        <span>Estoque</span>
+    </a>
+</nav>
