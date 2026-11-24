@@ -11,11 +11,36 @@ from .models import Cliente, ItemEstoque, Pedido
 from .servicos import registrar_movimentacao
 
 
+
 @login_required
 def painel(request):
-    pedidos = Pedido.objects.exclude(status=Pedido.Status.FINALIZADO).select_related("cliente")[:6]
-    itens = ItemEstoque.objects.filter(saldo_milesimos__lte=F("estoque_minimo_milesimos"))
-    return render(request, "painel.html", {"pedidos": pedidos, "itens": itens})
+    itens_reposicao = ItemEstoque.objects.filter(
+        saldo_milesimos__lte=F("estoque_minimo_milesimos")
+    )
+
+    pedidos_abertos = (
+        Pedido.objects.exclude(status=Pedido.Status.FINALIZADO)
+        .select_related("cliente")[:6]
+    )
+
+    contexto = {
+        "total_clientes": Cliente.objects.count(),
+
+        "total_pendentes": Pedido.objects.filter(
+            status=Pedido.Status.PENDENTE
+        ).count(),
+
+        "total_em_producao": Pedido.objects.filter(
+            status=Pedido.Status.EM_PRODUCAO
+        ).count(),
+
+        "total_estoque_baixo": itens_reposicao.count(),
+
+        "pedidos": pedidos_abertos,
+        "itens": itens_reposicao[:6],
+    }
+
+    return render(request, "painel.html", contexto)
 
 
 @login_required

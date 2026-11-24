@@ -1,40 +1,123 @@
 {% extends "base.html" %}
 {% block titulo %}Painel | GestãoFácil{% endblock %}
+
 {% block conteudo %}
-<div class="titulo-pagina">
-    <h1>Painel</h1>
-    <div class="acoes">
+<div class="titulo-pagina gf-dashboard-cabecalho">
+    <div>
+        <h1>Visão geral</h1>
+        <p class="discreto">Acompanhe os clientes, os pedidos e o estoque do seu negócio.</p>
+    </div>
+    <div class="acoes gf-dashboard-acoes">
         <a class="botao secundario" href="{% url 'cliente_novo' %}">Novo cliente</a>
         <a class="botao" href="{% url 'pedido_novo' %}">Novo pedido</a>
     </div>
 </div>
-<div class="grade">
-    <section class="painel">
-        <div class="titulo-secao"><h2>Pedidos em aberto</h2><a href="{% url 'pedidos_lista' %}">Ver pedidos</a></div>
-        <ul class="registros">
-        {% for pedido in pedidos %}
-            <li>
-                <div><a class="nome" href="{% url 'pedido_detalhe' pedido.pk %}">{{ pedido.descricao }}</a>
-                    <p class="discreto">{{ pedido.cliente.nome }} · {{ pedido.data_entrega|date:"d/m/Y" }}</p></div>
-                <span class="etiqueta">{{ pedido.get_status_display }}</span>
-            </li>
-        {% empty %}
-            <li>Nenhum pedido em aberto.</li>
-        {% endfor %}
+
+<section class="gf-dashboard-resumo" aria-label="Indicadores do negócio">
+    <article class="gf-indicador">
+        <div class="gf-indicador-topo">
+            <h2>Clientes cadastrados</h2>
+            <span class="gf-indicador-icone" aria-hidden="true">
+                <svg class="gf-indicador-svg"><use href="#gf-icon-clientes"></use></svg>
+            </span>
+        </div>
+        <p class="gf-indicador-valor">{{ total_clientes }}</p>
+        <a class="gf-indicador-link" href="{% url 'clientes_lista' %}">Ver clientes <span aria-hidden="true">→</span></a>
+    </article>
+
+    <article class="gf-indicador">
+        <div class="gf-indicador-topo">
+            <h2>Pedidos pendentes</h2>
+            <span class="gf-indicador-icone gf-indicador-icone--pendente" aria-hidden="true">
+                <svg class="gf-indicador-svg"><use href="#gf-icon-pedidos"></use></svg>
+            </span>
+        </div>
+        <p class="gf-indicador-valor">{{ total_pendentes }}</p>
+        <a class="gf-indicador-link" href="{% url 'pedidos_lista' %}">Ver pedidos <span aria-hidden="true">→</span></a>
+    </article>
+
+    <article class="gf-indicador">
+        <div class="gf-indicador-topo">
+            <h2>Pedidos em produção</h2>
+            <span class="gf-indicador-icone gf-indicador-icone--producao" aria-hidden="true">
+                <svg class="gf-indicador-svg"><use href="#gf-icon-pedidos"></use></svg>
+            </span>
+        </div>
+        <p class="gf-indicador-valor">{{ total_em_producao }}</p>
+        <a class="gf-indicador-link" href="{% url 'pedidos_lista' %}">Acompanhar pedidos <span aria-hidden="true">→</span></a>
+    </article>
+
+    <article class="gf-indicador{% if total_estoque_baixo %} gf-indicador--atencao{% endif %}">
+        <div class="gf-indicador-topo">
+            <h2>Itens com estoque baixo</h2>
+            <span class="gf-indicador-icone gf-indicador-icone--estoque" aria-hidden="true">
+                <svg class="gf-indicador-svg"><use href="#gf-icon-estoque"></use></svg>
+            </span>
+        </div>
+        <p class="gf-indicador-valor">{{ total_estoque_baixo }}</p>
+        <a class="gf-indicador-link" href="{% url 'estoque_lista' %}">Ver estoque <span aria-hidden="true">→</span></a>
+    </article>
+</section>
+
+<div class="gf-dashboard-conteudo">
+    <section class="painel gf-dashboard-secao" aria-labelledby="gf-pedidos-titulo">
+        <div class="gf-dashboard-secao-topo">
+            <div>
+                <h2 id="gf-pedidos-titulo">Pedidos em aberto</h2>
+                <p class="discreto">Até seis pedidos, organizados pela data de entrega.</p>
+            </div>
+            <a href="{% url 'pedidos_lista' %}">Ver todos</a>
+        </div>
+
+        <ul class="gf-dashboard-lista">
+            {% for pedido in pedidos %}
+                <li>
+                    <div class="gf-dashboard-item-info">
+                        <a class="gf-dashboard-item-nome" href="{% url 'pedido_detalhe' pedido.pk %}">{{ pedido.descricao }}</a>
+                        <p class="gf-dashboard-item-meta">
+                            {{ pedido.cliente.nome }} · Entrega:
+                            <time datetime="{{ pedido.data_entrega|date:'Y-m-d' }}">{{ pedido.data_entrega|date:"d/m/Y" }}</time>
+                        </p>
+                    </div>
+                    <span class="etiqueta gf-dashboard-status{% if pedido.status == 'PENDENTE' %} gf-dashboard-status--pendente{% elif pedido.status == 'EM_PRODUCAO' %} gf-dashboard-status--producao{% endif %}">
+                        {{ pedido.get_status_display }}
+                    </span>
+                </li>
+            {% empty %}
+                <li class="gf-dashboard-vazio">
+                    <strong>Nenhum pedido em aberto.</strong>
+                    <span>Comece cadastrando um novo pedido.</span>
+                    <a href="{% url 'pedido_novo' %}">Criar pedido</a>
+                </li>
+            {% endfor %}
         </ul>
     </section>
-    <section class="painel">
-        <div class="titulo-secao"><h2>Itens para reposição</h2><a href="{% url 'estoque_lista' %}">Ver estoque</a></div>
-        <ul class="registros">
-        {% for item in itens %}
-            <li>
-                <div><a class="nome" href="{% url 'estoque_detalhe' item.pk %}">{{ item.nome }}</a>
-                    <p class="discreto">Saldo {{ item.saldo|floatformat:"3" }} {{ item.get_unidade_display }}</p></div>
-                <span class="etiqueta atencao">Estoque baixo</span>
-            </li>
-        {% empty %}
-            <li>Nenhum item atingiu o estoque mínimo.</li>
-        {% endfor %}
+
+    <section class="painel gf-dashboard-secao" aria-labelledby="gf-estoque-titulo">
+        <div class="gf-dashboard-secao-topo">
+            <div>
+                <h2 id="gf-estoque-titulo">Itens para reposição</h2>
+                <p class="discreto">Até seis itens com saldo no mínimo ou abaixo dele.</p>
+            </div>
+            <a href="{% url 'estoque_lista' %}">Ver todos</a>
+        </div>
+
+        <ul class="gf-dashboard-lista">
+            {% for item in itens %}
+                <li>
+                    <div class="gf-dashboard-item-info">
+                        <a class="gf-dashboard-item-nome" href="{% url 'estoque_detalhe' item.pk %}">{{ item.nome }}</a>
+                        <p class="gf-dashboard-item-meta">Saldo: {{ item.saldo|floatformat:3 }} {{ item.get_unidade_display }}</p>
+                    </div>
+                    <span class="etiqueta atencao gf-dashboard-status">Estoque baixo</span>
+                </li>
+            {% empty %}
+                <li class="gf-dashboard-vazio">
+                    <strong>Nenhum item precisa de reposição.</strong>
+                    <span>Os saldos estão acima dos limites mínimos definidos.</span>
+                    <a href="{% url 'estoque_lista' %}">Consultar estoque</a>
+                </li>
+            {% endfor %}
         </ul>
     </section>
 </div>
