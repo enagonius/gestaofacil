@@ -2,7 +2,8 @@ from uuid import uuid4
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import F
+from django.core.paginator import Paginator
+from django.db.models import F, Q
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -45,7 +46,20 @@ def painel(request):
 
 @login_required
 def clientes_lista(request):
-    return render(request, "clientes/lista.html", {"clientes": Cliente.objects.all()})
+    busca = request.GET.get("q", "").strip()[:100]
+    clientes = Cliente.objects.all()
+
+    if busca:
+        clientes = clientes.filter(
+            Q(nome__icontains=busca) | Q(telefone__icontains=busca)
+        )
+
+    pagina = Paginator(clientes, 10).get_page(request.GET.get("page"))
+    return render(request, "clientes/lista.html", {
+        "clientes": pagina,
+        "page_obj": pagina,
+        "busca": busca,
+    })
 
 
 @login_required
@@ -70,7 +84,26 @@ def cliente_detalhe(request, pk):
 
 @login_required
 def pedidos_lista(request):
-    return render(request, "pedidos/lista.html", {"pedidos": Pedido.objects.select_related("cliente")})
+    busca = request.GET.get("q", "").strip()[:100]
+    status = request.GET.get("status", "")
+    if status not in Pedido.Status.values:
+        status = ""
+
+    pedidos = Pedido.objects.select_related("cliente")
+    if busca:
+        pedidos = pedidos.filter(
+            Q(descricao__icontains=busca) | Q(cliente__nome__icontains=busca)
+        )
+    if status:
+        pedidos = pedidos.filter(status=status)
+
+    pagina = Paginator(pedidos, 10).get_page(request.GET.get("page"))
+    return render(request, "pedidos/lista.html", {
+        "pedidos": pagina,
+        "page_obj": pagina,
+        "busca": busca,
+        "status_selecionado": status,
+    })
 
 
 @login_required
@@ -126,7 +159,30 @@ def pedido_status(request, pk):
 
 @login_required
 def estoque_lista(request):
-    return render(request, "estoque/lista.html", {"itens": ItemEstoque.objects.all()})
+    busca = request.GET.get("q", "").strip()[:100]
+    situacao = request.GET.get("situacao", "")
+    if situacao not in {"baixo", "normal"}:
+        situacao = ""
+
+    itens = ItemEstoque.objects.all()
+    if busca:
+        itens = itens.filter(nome__icontains=busca)
+    if situacao == "baixo":
+        itens = itens.filter(
+            saldo_milesimos__lte=F("estoque_minimo_milesimos")
+        )
+    elif situacao == "normal":
+        itens = itens.filter(
+            saldo_milesimos__gt=F("estoque_minimo_milesimos")
+        )
+
+    pagina = Paginator(itens, 10).get_page(request.GET.get("page"))
+    return render(request, "estoque/lista.html", {
+        "itens": pagina,
+        "page_obj": pagina,
+        "busca": busca,
+        "situacao_selecionada": situacao,
+    })
 
 
 @login_required

@@ -1,0 +1,30 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="gf-lista-paginacao" aria-label="Paginação da lista">
+    <div class="gf-lista-paginas-info">
+        Exibindo {{ page_obj.start_index }}–{{ page_obj.end_index }} de
+        {{ page_obj.paginator.count }} registros
+    </div>
+
+    <div class="gf-lista-paginas-acoes">
+        {% if page_obj.has_previous %}
+            <a class="gf-lista-pagina-btn" href="{% querystring page=page_obj.previous_page_number %}">
+                <span aria-hidden="true">←</span> Anterior
+            </a>
+        {% else %}
+            <span class="gf-lista-pagina-btn gf-lista-pagina-btn--desativado" aria-disabled="true">← Anterior</span>
+        {% endif %}
+
+        <span class="gf-lista-pagina-atual" aria-live="polite">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a class="gf-lista-pagina-btn" href="{% querystring page=page_obj.next_page_number %}">
+                Próxima <span aria-hidden="true">→</span>
+            </a>
+        {% else %}
+            <span class="gf-lista-pagina-btn gf-lista-pagina-btn--desativado" aria-disabled="true">Próxima →</span>
+        {% endif %}
+    </div>
+</nav>
+{% endif %}

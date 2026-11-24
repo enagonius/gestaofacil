@@ -1,20 +1,81 @@
 {% extends "base.html" %}
 {% block titulo %}Clientes | GestãoFácil{% endblock %}
 {% block conteudo %}
-<div class="titulo-pagina">
-    <h1>Clientes</h1>
-    <a class="botao" href="{% url 'cliente_novo' %}">Novo cliente</a>
-</div>
-<section class="painel">
-    <ul class="registros">
-    {% for cliente in clientes %}
-        <li>
-            <a class="nome" href="{% url 'cliente_detalhe' cliente.pk %}">{{ cliente.nome }}</a>
-            {% if cliente.telefone %}<span>{{ cliente.telefone }}</span>{% endif %}
-        </li>
-    {% empty %}
-        <li>Nenhum cliente cadastrado.</li>
-    {% endfor %}
-    </ul>
+<header class="titulo-pagina gf-lista-cabecalho">
+    <div>
+        <h1>Clientes</h1>
+        <p class="discreto">Consulte e organize os contatos do seu negócio.</p>
+    </div>
+    <a class="botao" href="{% url 'cliente_novo' %}">+ Novo cliente</a>
+</header>
+
+<section class="painel gf-lista-container" aria-labelledby="gf-clientes-titulo">
+    <div class="gf-lista-topo">
+        <div>
+            <h2 id="gf-clientes-titulo">Cadastro de clientes</h2>
+            <p class="discreto">{{ page_obj.paginator.count }} registro{{ page_obj.paginator.count|pluralize }} encontrado{{ page_obj.paginator.count|pluralize }}</p>
+        </div>
+    </div>
+
+    <form class="gf-lista-filtros" method="get" role="search" aria-label="Buscar clientes">
+        <div class="gf-lista-campo gf-lista-busca">
+            <label for="gf-busca-clientes">Buscar cliente</label>
+            <input id="gf-busca-clientes" name="q" type="search" maxlength="100"
+                   value="{{ busca }}" placeholder="Nome ou telefone">
+        </div>
+        <button type="submit" class="botao gf-lista-filtrar">Buscar</button>
+        {% if busca %}
+            <a class="gf-lista-limpar" href="{% url 'clientes_lista' %}">Limpar busca</a>
+        {% endif %}
+    </form>
+
+    {% if clientes %}
+        <div class="gf-lista-tabela-container">
+            <table class="gf-lista-tabela">
+                <caption class="gf-visually-hidden">Clientes cadastrados</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Telefone</th>
+                        <th scope="col">Cidade / UF</th>
+                        <th scope="col" class="gf-lista-coluna-acao">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for cliente in clientes %}
+                    <tr>
+                        <td data-label="Cliente">
+                            <a class="gf-lista-nome" href="{% url 'cliente_detalhe' cliente.pk %}">{{ cliente.nome }}</a>
+                        </td>
+                        <td data-label="Telefone">{{ cliente.telefone|default:"Não informado" }}</td>
+                        <td data-label="Cidade / UF">
+                            {% if cliente.cidade or cliente.uf %}
+                                {{ cliente.cidade|default:"—" }}{% if cliente.uf %} / {{ cliente.uf }}{% endif %}
+                            {% else %}—{% endif %}
+                        </td>
+                        <td data-label="Ação" class="gf-lista-coluna-acao">
+                            <a class="gf-lista-acao" href="{% url 'cliente_detalhe' cliente.pk %}">Ver detalhes <span aria-hidden="true">→</span></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="gf-lista-vazio">
+            <span class="gf-lista-vazio-icone" aria-hidden="true">⌕</span>
+            {% if busca %}
+                <h3>Nenhum cliente encontrado</h3>
+                <p>Tente outro nome ou telefone para refinar a busca.</p>
+                <a href="{% url 'clientes_lista' %}" class="botao secundario">Mostrar todos</a>
+            {% else %}
+                <h3>Nenhum cliente cadastrado</h3>
+                <p>Cadastre o primeiro cliente para começar a organizar os pedidos.</p>
+                <a href="{% url 'cliente_novo' %}" class="botao">Cadastrar cliente</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% include "partials/_paginacao.html" %}
 </section>
 {% endblock %}

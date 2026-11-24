@@ -1,18 +1,88 @@
 {% extends "base.html" %}
 {% block titulo %}Pedidos | GestãoFácil{% endblock %}
 {% block conteudo %}
-<div class="titulo-pagina"><h1>Pedidos</h1><a class="botao" href="{% url 'pedido_novo' %}">Novo pedido</a></div>
-<section class="painel">
-    <ul class="registros">
-    {% for pedido in pedidos %}
-        <li>
-            <div><a class="nome" href="{% url 'pedido_detalhe' pedido.pk %}">{{ pedido.descricao }}</a>
-                <p class="discreto">{{ pedido.cliente.nome }} · {{ pedido.data_entrega|date:"d/m/Y" }}</p></div>
-            <span class="etiqueta">{{ pedido.get_status_display }}</span>
-        </li>
-    {% empty %}
-        <li>Nenhum pedido cadastrado.</li>
-    {% endfor %}
-    </ul>
+<header class="titulo-pagina gf-lista-cabecalho">
+    <div>
+        <h1>Pedidos</h1>
+        <p class="discreto">Acompanhe prazos e o andamento das encomendas.</p>
+    </div>
+    <a class="botao" href="{% url 'pedido_novo' %}">+ Novo pedido</a>
+</header>
+
+<section class="painel gf-lista-container" aria-labelledby="gf-pedidos-titulo">
+    <div class="gf-lista-topo">
+        <div>
+            <h2 id="gf-pedidos-titulo">Todos os pedidos</h2>
+            <p class="discreto">{{ page_obj.paginator.count }} pedido{{ page_obj.paginator.count|pluralize }} encontrado{{ page_obj.paginator.count|pluralize }}</p>
+        </div>
+    </div>
+
+    <form class="gf-lista-filtros" method="get" role="search" aria-label="Buscar e filtrar pedidos">
+        <div class="gf-lista-campo gf-lista-busca">
+            <label for="gf-busca-pedidos">Buscar pedido</label>
+            <input id="gf-busca-pedidos" name="q" type="search" maxlength="100"
+                   value="{{ busca }}" placeholder="Descrição ou nome do cliente">
+        </div>
+        <div class="gf-lista-campo gf-lista-select">
+            <label for="gf-status-pedidos">Status</label>
+            <select id="gf-status-pedidos" name="status">
+                <option value="">Todos os status</option>
+                <option value="PENDENTE"{% if status_selecionado == 'PENDENTE' %} selected{% endif %}>Pendente</option>
+                <option value="EM_PRODUCAO"{% if status_selecionado == 'EM_PRODUCAO' %} selected{% endif %}>Em produção</option>
+                <option value="FINALIZADO"{% if status_selecionado == 'FINALIZADO' %} selected{% endif %}>Finalizado</option>
+            </select>
+        </div>
+        <button type="submit" class="botao gf-lista-filtrar">Filtrar</button>
+        {% if busca or status_selecionado %}
+            <a class="gf-lista-limpar" href="{% url 'pedidos_lista' %}">Limpar filtros</a>
+        {% endif %}
+    </form>
+
+    {% if pedidos %}
+        <div class="gf-lista-tabela-container">
+            <table class="gf-lista-tabela">
+                <caption class="gf-visually-hidden">Pedidos cadastrados</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Pedido</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Entrega</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="gf-lista-coluna-acao">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for pedido in pedidos %}
+                    <tr>
+                        <td data-label="Pedido"><a class="gf-lista-nome" href="{% url 'pedido_detalhe' pedido.pk %}">{{ pedido.descricao }}</a></td>
+                        <td data-label="Cliente">{{ pedido.cliente.nome }}</td>
+                        <td data-label="Entrega"><time datetime="{{ pedido.data_entrega|date:'Y-m-d' }}">{{ pedido.data_entrega|date:"d/m/Y" }}</time></td>
+                        <td data-label="Status">
+                            <span class="gf-lista-status{% if pedido.status == 'PENDENTE' %} gf-lista-status--pendente{% elif pedido.status == 'EM_PRODUCAO' %} gf-lista-status--producao{% else %} gf-lista-status--finalizado{% endif %}">
+                                {{ pedido.get_status_display }}
+                            </span>
+                        </td>
+                        <td data-label="Ação" class="gf-lista-coluna-acao"><a class="gf-lista-acao" href="{% url 'pedido_detalhe' pedido.pk %}">Ver detalhes <span aria-hidden="true">→</span></a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="gf-lista-vazio">
+            <span class="gf-lista-vazio-icone" aria-hidden="true">⌕</span>
+            {% if busca or status_selecionado %}
+                <h3>Nenhum pedido encontrado</h3>
+                <p>Experimente outra busca ou altere o status selecionado.</p>
+                <a href="{% url 'pedidos_lista' %}" class="botao secundario">Mostrar todos</a>
+            {% else %}
+                <h3>Nenhum pedido cadastrado</h3>
+                <p>Registre seu primeiro pedido para acompanhar o andamento.</p>
+                <a href="{% url 'pedido_novo' %}" class="botao">Criar pedido</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% include "partials/_paginacao.html" %}
 </section>
 {% endblock %}

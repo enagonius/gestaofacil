@@ -1,22 +1,89 @@
 {% extends "base.html" %}
 {% block titulo %}Estoque | GestãoFácil{% endblock %}
 {% block conteudo %}
-<div class="titulo-pagina">
-    <h1>Estoque</h1>
-    <a class="botao" href="{% url 'estoque_novo' %}">Novo item</a>
-</div>
-<section class="painel">
-    <ul class="registros">
-    {% for item in itens %}
-        <li>
-            <div><a class="nome" href="{% url 'estoque_detalhe' item.pk %}">{{ item.nome }}</a>
-                <p class="discreto">Mínimo {{ item.estoque_minimo|floatformat:"3" }} {{ item.get_unidade_display }}</p></div>
-            <div class="registro-meta"><strong>{{ item.saldo|floatformat:"3" }} {{ item.get_unidade_display }}</strong>
-                {% if item.estoque_baixo %}<span class="etiqueta atencao">Estoque baixo</span>{% endif %}</div>
-        </li>
-    {% empty %}
-        <li>Nenhum item cadastrado.</li>
-    {% endfor %}
-    </ul>
+<header class="titulo-pagina gf-lista-cabecalho">
+    <div>
+        <h1>Estoque</h1>
+        <p class="discreto">Monitore o saldo e identifique itens que precisam de reposição.</p>
+    </div>
+    <a class="botao" href="{% url 'estoque_novo' %}">+ Novo item</a>
+</header>
+
+<section class="painel gf-lista-container" aria-labelledby="gf-estoque-titulo">
+    <div class="gf-lista-topo">
+        <div>
+            <h2 id="gf-estoque-titulo">Itens cadastrados</h2>
+            <p class="discreto">{{ page_obj.paginator.count }} {% if page_obj.paginator.count == 1 %}item encontrado{% else %}itens encontrados{% endif %}</p>
+        </div>
+    </div>
+
+    <form class="gf-lista-filtros" method="get" role="search" aria-label="Buscar e filtrar itens de estoque">
+        <div class="gf-lista-campo gf-lista-busca">
+            <label for="gf-busca-estoque">Buscar item</label>
+            <input id="gf-busca-estoque" name="q" type="search" maxlength="100"
+                   value="{{ busca }}" placeholder="Nome do item">
+        </div>
+        <div class="gf-lista-campo gf-lista-select">
+            <label for="gf-situacao-estoque">Situação</label>
+            <select id="gf-situacao-estoque" name="situacao">
+                <option value="">Todas as situações</option>
+                <option value="baixo"{% if situacao_selecionada == 'baixo' %} selected{% endif %}>Reposição necessária</option>
+                <option value="normal"{% if situacao_selecionada == 'normal' %} selected{% endif %}>Acima do mínimo</option>
+            </select>
+        </div>
+        <button type="submit" class="botao gf-lista-filtrar">Filtrar</button>
+        {% if busca or situacao_selecionada %}
+            <a class="gf-lista-limpar" href="{% url 'estoque_lista' %}">Limpar filtros</a>
+        {% endif %}
+    </form>
+
+    {% if itens %}
+        <div class="gf-lista-tabela-container">
+            <table class="gf-lista-tabela">
+                <caption class="gf-visually-hidden">Itens cadastrados no estoque</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Saldo atual</th>
+                        <th scope="col">Estoque mínimo</th>
+                        <th scope="col">Situação</th>
+                        <th scope="col" class="gf-lista-coluna-acao">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in itens %}
+                    <tr>
+                        <td data-label="Item"><a class="gf-lista-nome" href="{% url 'estoque_detalhe' item.pk %}">{{ item.nome }}</a></td>
+                        <td data-label="Saldo atual"><strong>{{ item.saldo|floatformat:3 }} {{ item.get_unidade_display }}</strong></td>
+                        <td data-label="Estoque mínimo">{{ item.estoque_minimo|floatformat:3 }} {{ item.get_unidade_display }}</td>
+                        <td data-label="Situação">
+                            {% if item.estoque_baixo %}
+                                <span class="gf-lista-status gf-lista-status--baixo">Estoque baixo</span>
+                            {% else %}
+                                <span class="gf-lista-status gf-lista-status--normal">Acima do mínimo</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="Ação" class="gf-lista-coluna-acao"><a class="gf-lista-acao" href="{% url 'estoque_detalhe' item.pk %}">Ver detalhes <span aria-hidden="true">→</span></a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="gf-lista-vazio">
+            <span class="gf-lista-vazio-icone" aria-hidden="true">⌕</span>
+            {% if busca or situacao_selecionada %}
+                <h3>Nenhum item encontrado</h3>
+                <p>Tente outro nome ou ajuste o filtro de situação.</p>
+                <a href="{% url 'estoque_lista' %}" class="botao secundario">Mostrar todos</a>
+            {% else %}
+                <h3>Nenhum item cadastrado</h3>
+                <p>Cadastre o primeiro item para controlar entradas, saídas e reposição.</p>
+                <a href="{% url 'estoque_novo' %}" class="botao">Cadastrar item</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% include "partials/_paginacao.html" %}
 </section>
 {% endblock %}
