@@ -1,13 +1,133 @@
 {% extends "base.html" %}
-{% block titulo %}Cadastro de cliente | GestãoFácil{% endblock %}
+
+{% block titulo %}
+    {% if cliente %}Editar cliente{% else %}Novo cliente{% endif %}
+    | GestãoFácil
+{% endblock %}
+
 {% block conteudo %}
-<a class="retorno" href="{% url 'clientes_lista' %}">Voltar para clientes</a>
-<div class="titulo-pagina"><h1>{% if cliente %}Editar cliente{% else %}Novo cliente{% endif %}</h1></div>
-<section class="painel formulario-painel">
-    <form class="formulario" method="post">
+
+<a class="retorno" href="{% url 'clientes_lista' %}">
+    Voltar para clientes
+</a>
+
+<div class="titulo-pagina">
+    <div>
+        <h1>
+            {% if cliente %}
+                Editar cliente
+            {% else %}
+                Novo cliente
+            {% endif %}
+        </h1>
+
+        <p class="discreto">
+            Preencha as informações para manter
+            o cadastro organizado.
+        </p>
+    </div>
+</div>
+
+<section class="painel formulario-painel cliente-formulario-painel">
+
+    <form class="formulario formulario-cliente" method="post">
         {% csrf_token %}
-        {{ form.as_div }}
-        <div class="acoes"><button class="botao" type="submit">Salvar cliente</button></div>
+
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+            <div class="mensagem error" role="alert">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <!-- INFORMAÇÕES PESSOAIS -->
+        <fieldset class="grupo-cliente">
+
+            <legend>Informações pessoais</legend>
+
+            <p class="grupo-descricao">
+                Dados básicos para identificar e contatar o cliente.
+            </p>
+
+            <div class="grade-cliente">
+
+                {% include "clientes/_campo.html" with campo=form.nome only %}
+
+                {% include "clientes/_campo.html" with campo=form.telefone only %}
+
+            </div>
+
+        </fieldset>
+
+        <!-- ENDEREÇO -->
+        <fieldset class="grupo-cliente">
+
+            <legend>Endereço</legend>
+
+            <p class="grupo-descricao">
+                Informações opcionais para entregas e atendimento.
+            </p>
+
+            <div class="grade-cliente">
+
+                {% include "clientes/_campo.html" with campo=form.cep only %}
+
+                {% include "clientes/_campo.html" with campo=form.uf only %}
+
+                <div class="largura-total">
+                    {% include "clientes/_campo.html" with campo=form.logradouro only %}
+                </div>
+
+                {% include "clientes/_campo.html" with campo=form.numero only %}
+
+                {% include "clientes/_campo.html" with campo=form.complemento only %}
+
+                {% include "clientes/_campo.html" with campo=form.bairro only %}
+
+                {% include "clientes/_campo.html" with campo=form.cidade only %}
+
+            </div>
+
+        </fieldset>
+
+        <!-- OBSERVAÇÕES -->
+        <fieldset class="grupo-cliente">
+
+            <legend>Observações</legend>
+
+            <p class="grupo-descricao">
+                Registre preferências ou outras informações relevantes.
+            </p>
+
+            {% include "clientes/_campo.html" with campo=form.observacoes only %}
+
+        </fieldset>
+
+        <!-- AÇÕES -->
+        <div class="acoes acoes-cliente">
+
+            <a
+                class="botao secundario"
+                href="{% if cliente %}{% url 'cliente_detalhe' cliente.pk %}{% else %}{% url 'clientes_lista' %}{% endif %}"
+            >
+                Cancelar
+            </a>
+
+            <button class="botao" type="submit">
+                {% if cliente %}
+                    Salvar alterações
+                {% else %}
+                    Cadastrar cliente
+                {% endif %}
+            </button>
+
+        </div>
+
     </form>
+
 </section>
+
 {% endblock %}
